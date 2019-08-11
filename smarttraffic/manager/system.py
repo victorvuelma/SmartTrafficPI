@@ -1,5 +1,5 @@
 import multitasking
-from gpiozero import CPUTemperature
+from gpiozero import CPUTemperature, LoadAverage
 from time import sleep
 
 from smarttraffic.manager import manager
@@ -30,8 +30,10 @@ class SystemManager(manager.Manager):
 
     def sendMonitor(self):
         _cpu = CPUTemperature()
+        _load = LoadAverage()
 
         print('[SYSTEM MGR] Current system status:')
-        print('[CPU] Temperature: %0.2f ºC' % (_cpu.temperature))
+        print('[CPU Temperature] %0.2f ºC' % (_cpu.temperature))
+        print(f'[LOAD] {_load.load_average}')
 
 manager = SystemManager()        
