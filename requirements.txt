@@ -1,6 +1,10 @@
+argh==0.26.2
 colorzero==1.1
 gpiozero==1.5.1
 multitasking==0.0.9
 paho-mqtt==1.4.0
+pathtools==0.1.2
 python-dotenv==0.10.3
+PyYAML==5.1.2
 RPi.GPIO==0.7.0
+watchdog==0.9.0
