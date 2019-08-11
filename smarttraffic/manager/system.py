@@ -32,6 +32,6 @@ class SystemManager(manager.Manager):
         _cpu = CPUTemperature()
 
         print('[SYSTEM MGR] Current system status:')
-        print(f'[CPU] Temperature: {_cpu.temperature}')
+        print('[CPU] Temperature: %0.2f ºC' % (_cpu.temperature))
 
 manager = SystemManager()        
