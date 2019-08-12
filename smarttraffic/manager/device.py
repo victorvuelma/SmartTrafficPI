@@ -5,35 +5,35 @@ from smarttraffic.device import device
 
 class DeviceManager(manager.Manager):
 
-    _devices = []
+    def __init__(self):
+        super().__init__()
+        self._devices = []
 
-    def init(self):
+    def init_manager(self):
         self.setup_devices()
 
-        self.init_devices()
-
-    def end(self):
-        pass
+    def start_manager(self):
+        self.init_devices()        
 
     def test_devices(self):
-        confirm = input('[MGR DEVICE] Do you really want to test all devices? (Y/n) ')
+        confirm = input('[DEVICE Manager] Do you really want to test all devices? (Y/n) ')
 
         if confirm == 'Y':
-            print(f'[MGR DEVICE] Testing all devices...')
+            print(f'[DEVICE Manager] Testing all devices...')
 
             for target_device in self._devices:
                 target_device.test_device()
                 sleep(1)
 
-            print(f'[MGR DEVICE] Test ended')
+            print(f'[DEVICE Manager] Test ended')
         else:
-            print(f'[MGR DEVICE] Test cancelled')
+            print(f'[DEVICE Manager] Test cancelled')
 
     def link_device(self, target_device: device.Device):
         self._devices.append(target_device)
 
     def setup_devices(self):
-        print(f'[MGR DEVICE] Setup all devices...')
+        print(f'[DEVICE Manager] Setup all devices...')
         for target_device in self._devices:
             self.setup_device(target_device)
 
@@ -42,7 +42,7 @@ class DeviceManager(manager.Manager):
             target_device.setup_device()
 
     def init_devices(self):
-        print(f'[MGR DEVICE] Init all devices...')
+        print(f'[DEVICE Manager] Init all devices...')
         for target_device in self._devices:
             self.init_device(target_device)
 
@@ -50,4 +50,4 @@ class DeviceManager(manager.Manager):
         if(target_device.state is device.State.SETUP):
             target_device.init_device()
 
-manager = DeviceManager()
+device_manager = DeviceManager()
