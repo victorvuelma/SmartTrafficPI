@@ -1,7 +1,7 @@
 from enum import Enum
 class Manager(object):
 
-    def __construct__(self):
+    def __init__(self):
         self.state = State.WAITING
 
     def init(self):
@@ -9,7 +9,7 @@ class Manager(object):
             self.init_manager()
 
         if(self.state is State.WAITING or self.state is State.STOPPED ):
-            self.end_manager()
+            self.start_manager()
             self.state = State.RUNNING
 
     def end(self):
