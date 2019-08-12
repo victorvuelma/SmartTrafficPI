@@ -1,32 +1,34 @@
 import time
 
 from smarttraffic.device import trafficlight, pedestrianlight, trafficsensor
-from smarttraffic.manager import device, system
+from smarttraffic.manager import device, system, task
 from smarttraffic.element import road
 from smarttraffic.element import crossing
 
 def init():
-    system.manager.init()
+    system.system_manager.init()
+
+    task.task_manager.init_manager()
 
     loadSys()
     
 def loadSys():
-    sensor_bela_cintra = trafficsensor.TrafficSensorDevice(4)
-    sensor_paulista_a = trafficsensor.TrafficSensorDevice(3)
-    sensor_paulista_b = trafficsensor.TrafficSensorDevice(2)
+    sensor_bela_cintra = trafficsensor.TrafficSensorDevice('bela_cintra', 4)
+    sensor_paulista_a = trafficsensor.TrafficSensorDevice('paulista_a', 3)
+    sensor_paulista_b = trafficsensor.TrafficSensorDevice('paulista_b', 2)
 
-    light_paulista_a = trafficlight.TrafficLightDevice(14, 15, 18)
-    light_paulista_b = trafficlight.TrafficLightDevice(25, 8, 7)
-    light_bela_cintra = trafficlight.TrafficLightDevice(16, 20, 21)
+    light_paulista_a = trafficlight.TrafficLightDevice('paulista_a', 14, 15, 18)
+    light_paulista_b = trafficlight.TrafficLightDevice('paulista_b', 25, 8, 7)
+    light_bela_cintra = trafficlight.TrafficLightDevice('bela_cintra', 16, 20, 21)
     
-    device.manager.link_device(light_paulista_a)
-    device.manager.link_device(light_paulista_b)
-    device.manager.link_device(light_bela_cintra)
-    device.manager.link_device(sensor_bela_cintra)
-    device.manager.link_device(sensor_paulista_a)
-    device.manager.link_device(sensor_paulista_b)
+    device.device_manager.link_device(light_paulista_a)
+    device.device_manager.link_device(light_paulista_b)
+    device.device_manager.link_device(light_bela_cintra)
+    device.device_manager.link_device(sensor_bela_cintra)
+    device.device_manager.link_device(sensor_paulista_a)
+    device.device_manager.link_device(sensor_paulista_b)
 
-    device.manager.init()
+    device.device_manager.init()
 
     cross_paulista_bela_cintra = crossing.Crossing()
 
@@ -55,7 +57,7 @@ def loadSys():
             print('open bela cintra')
             cross_road_bela_cintra.request_open()
 
-            device.manager.test_devices()
+            device.device_manager.test_devices()
         elif sensor_paulista_a.find():
             print('open paulista a')
             cross_road_av_paulista_a.request_open()
