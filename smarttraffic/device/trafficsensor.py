@@ -5,8 +5,8 @@ from smarttraffic.device import device
 
 class TrafficSensorDevice(device.Device):
 
-    def __init__(self, pin):
-        super().__init__(self)
+    def __init__(self, id, pin):
+        super().__init__(self, id)
         self._pin = pin
         self._sensor = None
 

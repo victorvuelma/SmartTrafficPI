@@ -13,8 +13,8 @@ class Light(Enum):
 
 class TrafficLightDevice(device.Device):
 
-    def __init__(self, pinLedR, pinLedY, pinLedG):
-        super().__init__(self)
+    def __init__(self, id, pinLedR, pinLedY, pinLedG):
+        super().__init__(self, id)
         self._light = Light.NONE
         self.pinLedR = pinLedR
         self.pinLedY = pinLedY

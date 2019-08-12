@@ -11,11 +11,11 @@ class Light(Enum):
 
 class PedestrianLightDevice(device.Device):
 
-    def __init__(self, _pin_led_r, _pin_led_g):
-        super().__init__(self)
+    def __init__(self, id, pin_led_r, pin_led_g):
+        super().__init__(self, id)
         self._light = Light.NONE
-        self._pin_led_r = _pin_led_r
-        self._pin_led_g = _pin_led_g
+        self._pin_led_r = pin_led_r
+        self._pin_led_g = pin_led_g
 
     def _setup(self):
         self._led_g = LED(self._pin_led_g)

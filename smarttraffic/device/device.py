@@ -1,8 +1,6 @@
 import random
 from enum import Enum
 
-from abc import ABC, abstractmethod
-
 class State(Enum):
     
     WAITING = 0
@@ -10,28 +8,23 @@ class State(Enum):
     RUNNING = 2
     DISABLED = 3
 
-class Device(ABC):
+class Device(object):
 
-    _uuid = None
-    state = State.WAITING
-
-    def __init__(self, device):
+    def __init__(self, device, id):
         self._uuid = hash(random.getrandbits(128))
+        self.id = id
+        self.state = State.WAITING
         print(f'[DEVICE {self._uuid}] Created a {device.__class__.__name__}')
 
-    @abstractmethod
     def _init(self):
         pass
 
-    @abstractmethod
     def _setup(self):
         pass
 
-    @abstractmethod
     def pins(self):
         pass
 
-    @abstractmethod
     def _hard_test(self):
         pass
 
