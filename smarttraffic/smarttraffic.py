@@ -2,15 +2,20 @@ import time
 from os import getenv
 
 from smarttraffic.device import trafficlight, pedestrianlight, trafficsensor
-from smarttraffic.manager import device, system, task
+from smarttraffic.manager import device, system, task, network
 from smarttraffic.element import road
 from smarttraffic.element import crossing
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def init():
     system.system_manager.init()
 
     task.task_manager.init_manager()
+
+    network.network_manager.init_manager()
 
     if(getenv('raspberry') == True):
         loadSys()
