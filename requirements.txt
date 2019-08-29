@@ -1,7 +1,6 @@
 argh==0.26.2
 colorzero==1.1
 gpiozero==1.5.1
-multitasking==0.0.9
 paho-mqtt==1.4.0
 pathtools==0.1.2
 python-dotenv==0.10.3
