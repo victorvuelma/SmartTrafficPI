@@ -55,4 +55,4 @@ class DeviceManager(manager.Manager):
             target_device.init_device()
 
 
-device_manager = DeviceManager()
+_manager = DeviceManager()

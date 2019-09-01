@@ -2,8 +2,6 @@ import random
 
 from termcolor import cprint
 
-from smarttraffic.device import trafficlight
-
 
 class Road():
 

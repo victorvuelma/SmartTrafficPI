@@ -109,4 +109,4 @@ class TaskManager(manager.Manager):
                 task.join()
 
 
-task_manager = TaskManager()
+_manager = TaskManager()

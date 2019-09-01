@@ -3,8 +3,12 @@ from os import getenv
 
 from termcolor import cprint
 
-from smarttraffic.device import trafficlight, pedestrianlight, trafficsensor
-from smarttraffic.manager import device, system, task, network
+from smarttraffic.device import trafficlight_device, pedestrianlight_device, trafficsensor_device
+from smarttraffic.manager.device_manager import _manager as device_manager
+from smarttraffic.manager.network_manager import _manager as network_manager
+from smarttraffic.manager.system_manager import _manager as system_manager
+from smarttraffic.manager.task_manager import _manager as task_manager
+
 from smarttraffic.element import road, crossing
 
 from dotenv import load_dotenv
@@ -15,15 +19,15 @@ def init():
     cprint('ST => HELLO WORLD!', 'green')
 
     cprint('ST => Initializing...', 'yellow')
-    task.task_manager.init()
-    system.system_manager.init()
-    network.network_manager.init()
+    task_manager.init()
+    system_manager.init()
+    network_manager.init()
     cprint('ST => Init complete.', 'green')
 
     cprint('ST => Starting...', 'yellow')
-    task.task_manager.start()
-    system.system_manager.start()
-    network.network_manager.start()
+    task_manager.start()
+    system_manager.start()
+    network_manager.start()
     cprint('ST => Start complete.', 'green')
 
     if(getenv('raspberry') == True):
@@ -31,24 +35,28 @@ def init():
 
 
 def loadSys():
-    sensor_bela_cintra = trafficsensor.TrafficSensorDevice('bela_cintra', 4)
-    sensor_paulista_a = trafficsensor.TrafficSensorDevice('paulista_a', 3)
-    sensor_paulista_b = trafficsensor.TrafficSensorDevice('paulista_b', 2)
+    sensor_bela_cintra = trafficsensor_device.TrafficSensorDevice(
+        'bela_cintra', 4)
+    sensor_paulista_a = trafficsensor_device.TrafficSensorDevice(
+        'paulista_a', 3)
+    sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
+        'paulista_b', 2)
 
-    light_paulista_a = trafficlight.TrafficLightDevice(
+    light_paulista_a = trafficlight_device.TrafficLightDevice(
         'paulista_a', 14, 15, 18)
-    light_paulista_b = trafficlight.TrafficLightDevice('paulista_b', 25, 8, 7)
-    light_bela_cintra = trafficlight.TrafficLightDevice(
+    light_paulista_b = trafficlight_device.TrafficLightDevice(
+        'paulista_b', 25, 8, 7)
+    light_bela_cintra = trafficlight_device.TrafficLightDevice(
         'bela_cintra', 16, 20, 21)
 
-    device.device_manager.link_device(light_paulista_a)
-    device.device_manager.link_device(light_paulista_b)
-    device.device_manager.link_device(light_bela_cintra)
-    device.device_manager.link_device(sensor_bela_cintra)
-    device.device_manager.link_device(sensor_paulista_a)
-    device.device_manager.link_device(sensor_paulista_b)
+    device_manager.link_device(light_paulista_a)
+    device_manager.link_device(light_paulista_b)
+    device_manager.link_device(light_bela_cintra)
+    device_manager.link_device(sensor_bela_cintra)
+    device_manager.link_device(sensor_paulista_a)
+    device_manager.link_device(sensor_paulista_b)
 
-    device.device_manager.init()
+    device_manager.init()
 
     cross_paulista_bela_cintra = crossing.Crossing()
 

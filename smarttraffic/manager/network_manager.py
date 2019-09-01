@@ -103,4 +103,4 @@ class NetworkManager(manager.Manager):
         cprint(f'[NETWORK] Start listen at {channel}', 'green')
 
 
-network_manager = NetworkManager()
+_manager = NetworkManager()

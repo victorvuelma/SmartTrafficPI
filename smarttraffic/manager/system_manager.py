@@ -5,17 +5,16 @@ from datetime import datetime, timedelta
 from gpiozero import CPUTemperature, LoadAverage
 from termcolor import cprint
 
-from smarttraffic.manager import manager
-from smarttraffic.manager import task
+from smarttraffic.manager import manager, task_manager
 
 
-class SystemMonitorTask(task.Task):
+class SystemMonitorTask(task_manager.Task):
 
     def __init__(self, id):
         super().__init__(id, 15, True)
 
     def execute(self):
-        system_manager.send_monitor()
+        _manager.send_monitor()
 
 
 class SystemManager(manager.Manager):
@@ -35,13 +34,13 @@ class SystemManager(manager.Manager):
         self.end_monitor()
 
     def init_monitor(self):
-        task.task_manager.create_task(SystemMonitorTask('system_monitor'))
+        task_manager._manager.create_task(SystemMonitorTask('system_monitor'))
 
     def start_monitor(self):
-        task.task_manager.start_task('system_monitor')
+        task_manager._manager.start_task('system_monitor')
 
     def end_monitor(self):
-        task.task_manager.end_task('system_monitor')
+        task_manager._manager.end_task('system_monitor')
 
     def td_format(self, td_object):
         seconds = int(td_object.total_seconds())
@@ -80,4 +79,4 @@ class SystemManager(manager.Manager):
         cprint(f'[TIME] Running for {running}', 'yellow')
 
 
-system_manager = SystemManager()
+_manager = SystemManager()
