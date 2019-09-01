@@ -26,6 +26,9 @@ class Task(threading.Thread):
         self.state = TaskState.WAITING
 
     def run(self):
+        while(self.state is TaskState.WAITING):
+            pass
+
         if self.repeating:
             while self.state is not TaskState.STOP:
                 self.state = TaskState.RUNNING
@@ -55,8 +58,7 @@ class TaskManager(manager.Manager):
         self.tasks = {}
 
     def start_manager(self):
-        for id, task in self.tasks.items():
-            self.start_task(id)
+        pass
 
     def stop_manager(self):
         for task in self.tasks:
