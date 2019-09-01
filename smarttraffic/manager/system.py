@@ -23,7 +23,7 @@ class SystemManager(manager.Manager):
         super().__init__()
 
     def init_manager(self):
-        pass
+        self.init_monitor()
 
     def start_manager(self):
         self.start_monitor()
@@ -31,8 +31,11 @@ class SystemManager(manager.Manager):
     def end_manager(self):
         self.end_monitor()
 
-    def start_monitor(self):
+    def init_monitor(self):
         task.task_manager.create_task(SystemMonitorTask('system_monitor'))
+
+    def start_monitor(self):
+        task.task_manager.start_task('system_monitor')
 
     def end_monitor(self):
         task.task_manager.end_task('system_monitor')

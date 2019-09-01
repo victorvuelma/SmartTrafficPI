@@ -6,6 +6,7 @@ from termcolor import cprint
 
 from smarttraffic.manager import manager
 
+
 class TaskState(Enum):
     WAITING = 0
     START = 1
@@ -14,15 +15,16 @@ class TaskState(Enum):
     STOPPING = 4
     ENDED = 5
 
+
 class Task(threading.Thread):
 
-    def __init__(self, id, delay = 10, reapeating = True):
+    def __init__(self, id, delay=10, reapeating=True):
         super().__init__()
         self.id = id
         self.delay = delay
         self.repeating = reapeating
         self.state = TaskState.WAITING
-    
+
     def run(self):
         if self.repeating:
             while self.state is not TaskState.STOP:
@@ -39,11 +41,12 @@ class Task(threading.Thread):
                 self.state = TaskState.RUNNING
                 self.execute()
                 self.state = TaskState.STOPPING
-        
+
         self.state = TaskState.ENDED
 
     def execute(self):
         pass
+
 
 class TaskManager(manager.Manager):
 
@@ -51,9 +54,9 @@ class TaskManager(manager.Manager):
         super().__init__()
         self.tasks = {}
 
-    def init_manager(self):
+    def start_manager(self):
         for id, task in self.tasks.items():
-            self.start_task(task)
+            self.start_task(id)
 
     def stop_manager(self):
         for task in self.tasks:
@@ -76,12 +79,20 @@ class TaskManager(manager.Manager):
         self.tasks[task.id] = task
 
         if self.state is manager.State.RUNNING:
-            self.start_task(task)
+            self.start_task(task.id)
 
-    def start_task(self, task: Task):
-        if task.state is not TaskState.RUNNING and task.state is not TaskState.STOPPING:
-            task.state = TaskState.START
-            task.start()
+    def start_task(self, taskId):
+        if taskId in self.tasks:
+            task = self.tasks[taskId]
+
+            if task.state is not TaskState.RUNNING and task.state is not TaskState.STOPPING:
+                task.state = TaskState.START
+                task.start()
+
+                cprint(f'[TASK] Started task {taskId}.', 'green')
+
+        else:
+            cprint(f'[TASK] Try to start task {taskId}, not found.', 'red')
 
     def end_task(self, taskId):
         if taskId in self.tasks:
@@ -90,5 +101,6 @@ class TaskManager(manager.Manager):
             if task.state is TaskState.START or task.state is TaskState.RUNNING:
                 task.STATE = TaskState.STOP
                 task.join()
-            
+
+
 task_manager = TaskManager()

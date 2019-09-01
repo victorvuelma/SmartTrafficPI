@@ -1,21 +1,30 @@
 import time
 from os import getenv
 
+from termcolor import cprint
+
 from smarttraffic.device import trafficlight, pedestrianlight, trafficsensor
 from smarttraffic.manager import device, system, task, network
-from smarttraffic.element import road
-from smarttraffic.element import crossing
+from smarttraffic.element import road, crossing
 
 from dotenv import load_dotenv
 load_dotenv()
 
 
 def init():
+    cprint('ST => HELLO WORLD!', 'green')
+
+    cprint('ST => Initializing...', 'yellow')
+    task.task_manager.init()
     system.system_manager.init()
+    network.network_manager.init()
+    cprint('ST => Init complete.', 'green')
 
-    task.task_manager.init_manager()
-
-    network.network_manager.init_manager()
+    cprint('ST => Starting...', 'yellow')
+    task.task_manager.start()
+    system.system_manager.start()
+    network.network_manager.start()
+    cprint('ST => Start complete.', 'green')
 
     if(getenv('raspberry') == True):
         loadSys()
