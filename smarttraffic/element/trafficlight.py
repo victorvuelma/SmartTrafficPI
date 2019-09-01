@@ -53,6 +53,8 @@ class TrafficLight:
         super().__init__()
         self.id = id
 
+        self.changeState(TrafficState.NONE)
+
         self.changeMode(mode)
 
         self.task = TrafficLightTask(self)
@@ -87,6 +89,11 @@ class TrafficLight:
         self.nextPhase = phase.next
         self.nextPhaseTime = self.phaseTime + self.currentPhase.duration
 
+        self.changeState(self.currentPhase.state)
+
+    def changeState(self, state: TrafficState):
+        self.currentState = state
+
         self.updateDevice()
 
 
@@ -101,12 +108,15 @@ class TrafficLightTask(task_manager.Task):
             now = datetime.now().timestamp()
             if now > self.light.nextPhaseTime:
 
-                cprint(f'[TRAFFICLIGHT/{self.light.id}] Change state to {self.light.nextPhase.state}.',
-                       self.light.nextPhase.state.value.name.lower())
+                next = self.light.nextPhase
+
+                cprint(
+                    f'[TRAFFICLIGHT/{self.light.id}] Change state to {next.state}.',
+                    ('yellow' if next.state is TrafficState.NONE else next.state.value.name.lower()))
 
                 network_manager._manager.send_payload('trafficlight', {
                     id: self.light.id,
-                    next: self.light.nextPhase.state
+                    next: next.state
                 })
 
-                self.light.changePhase(self.light.nextPhase)
+                self.light.changePhase(next)
