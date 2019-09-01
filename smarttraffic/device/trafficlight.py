@@ -4,12 +4,14 @@ from time import sleep
 
 from smarttraffic.device import device
 
+
 class Light(Enum):
 
     NONE = 0
     RED = 1
     YELLOW = 2
     GREEN = 3
+
 
 class TrafficLightDevice(device.Device):
 
@@ -21,10 +23,10 @@ class TrafficLightDevice(device.Device):
         self.pinLedG = pinLedG
 
     def pins(self):
-        return [ self.pinLedR, self.pinLedY, self.pinLedG ]
+        return [self.pinLedR, self.pinLedY, self.pinLedG]
 
     def leds(self):
-        return [ self.ledG, self.ledY, self.ledR ]
+        return [self.ledG, self.ledY, self.ledR]
 
     def _setup(self):
         self.ledG = LED(self.pinLedG)
@@ -32,7 +34,7 @@ class TrafficLightDevice(device.Device):
         self.ledY = LED(self.pinLedY)
 
     def _init(self):
-        self.change_light(Light.YELLOW)
+        self.change_light(Light.RED)
 
     def _hard_test(self):
         for led in self.leds():
@@ -44,20 +46,26 @@ class TrafficLightDevice(device.Device):
             led.off()
             sleep(0.1)
 
+    def _find_led(self, light: Light):
+        if(light is Light.RED):
+            return self.ledR
+        elif(light is Light.YELLOW):
+            return self.ledY
+        elif(light is Light.GREEN):
+            return self.ledG
+        return None
+
     def change_light(self, light: Light):
         if(self.state is device.State.RUNNING):
             current = self._find_led(self._light)
-            if(current is not None): current.off()
+            if(current is not None):
+                current.off()
 
-            self._light =  light           
+            self._light = light
 
             led = self._find_led(self._light)
-            if(led is not None): led.on()
+            if(led is not None):
+                led.on()
         else:
-            self._device_print(f'Cant change traffic light at state {self.state}')
-
-    def _find_led(self, light: Light):
-        if(light is Light.RED): return self.ledR
-        elif(light is Light.YELLOW): return self.ledY
-        elif(light is Light.GREEN): return self.ledG
-        return None
+            self._device_print(
+                f'Cant change traffic light at state {self.state}')

@@ -31,15 +31,19 @@ class Task(threading.Thread):
 
         if self.repeating:
             while self.state is not TaskState.STOP:
+                if self.state is not TaskState.STOP:
+                    s = self.delay
+                    while s > 0 and self.state is not TaskState.STOP:
+                        sleep(1)
+                        s = s - 1
                 self.state = TaskState.RUNNING
                 self.execute()
-                if self.state is not TaskState.STOP:
-                    sleep(self.delay)
-                else:
-                    self.state = TaskState.STOPPING
         else:
             if self.delay is not None:
-                sleep(self.delay)
+                s = self.delay
+                while s > 0 and self.state is not TaskState.STOP:
+                    sleep(1)
+                    s = s - 1
             if self.state is not TaskState.STOP:
                 self.state = TaskState.RUNNING
                 self.execute()

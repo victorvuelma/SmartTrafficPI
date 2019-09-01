@@ -1,12 +1,16 @@
 import random
 from enum import Enum
 
+from termcolor import cprint
+
+
 class State(Enum):
-    
+
     WAITING = 0
     SETUP = 1
     RUNNING = 2
     DISABLED = 3
+
 
 class Device(object):
 
@@ -14,7 +18,8 @@ class Device(object):
         self._uuid = hash(random.getrandbits(128))
         self.id = id
         self.state = State.WAITING
-        print(f'[DEVICE {self._uuid}] Created a {device.__class__.__name__}')
+        cprint(
+            f'[DEVICE {self._uuid}] Created a {device.__class__.__name__}', 'yellow')
 
     def _init(self):
         pass
@@ -29,7 +34,7 @@ class Device(object):
         pass
 
     def _device_print(self, str):
-        print(f'[DEVICE {self._uuid}] {str}')
+        cprint(f'[DEVICE {self._uuid}] {str}', 'yellow')
 
     def _device_input(self, str):
         return input(f'[DEVICE {self._uuid}] {str}')
@@ -54,4 +59,3 @@ class Device(object):
             self._device_print(f'Done init')
         else:
             self._device_print(f'Cant run init at state {self.state}')
-

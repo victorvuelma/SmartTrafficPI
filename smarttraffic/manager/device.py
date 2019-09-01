@@ -1,7 +1,10 @@
 from time import sleep
 
+from termcolor import cprint
+
 from smarttraffic.manager import manager
-from smarttraffic.device import device 
+from smarttraffic.device import device
+
 
 class DeviceManager(manager.Manager):
 
@@ -13,21 +16,22 @@ class DeviceManager(manager.Manager):
         self.setup_devices()
 
     def start_manager(self):
-        self.init_devices()        
+        self.init_devices()
 
     def test_devices(self):
-        confirm = input('[DEVICE Manager] Do you really want to test all devices? (Y/n) ')
+        confirm = input(
+            '[DEVICE Manager] Do you really want to test all devices? (Y/n) ')
 
         if confirm == 'Y':
-            print(f'[DEVICE Manager] Testing all devices...')
+            cprint(f'[DEVICE Manager] Testing all devices...', 'yellow')
 
             for target_device in self._devices:
                 target_device.test_device()
                 sleep(1)
 
-            print(f'[DEVICE Manager] Test ended')
+            cprint(f'[DEVICE Manager] Test ended', 'green')
         else:
-            print(f'[DEVICE Manager] Test cancelled')
+            cprint(f'[DEVICE Manager] Test cancelled', 'red')
 
     def link_device(self, target_device: device.Device):
         self._devices.append(target_device)
@@ -49,5 +53,6 @@ class DeviceManager(manager.Manager):
     def init_device(self, target_device: device.Device):
         if(target_device.state is device.State.SETUP):
             target_device.init_device()
+
 
 device_manager = DeviceManager()

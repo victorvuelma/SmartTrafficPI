@@ -3,6 +3,7 @@ from time import sleep
 from smarttraffic.element import road
 from smarttraffic.device import trafficlight
 
+
 class CrossingRoad():
 
     def __init__(self, target_road: road.Road):
@@ -21,7 +22,7 @@ class CrossingRoad():
                 target_light.change_light(trafficlight.Light.YELLOW)
 
         sleep(1)
-            
+
         for target_light in self._lights:
             if(target_light._light is trafficlight.Light.YELLOW):
                 target_light.change_light(trafficlight.Light.RED)
@@ -29,12 +30,13 @@ class CrossingRoad():
     def request_open(self):
         for cross_road in self._cross:
             cross_road.request_close()
-    
+
         for target_light in self._lights:
             target_light.change_light(trafficlight.Light.GREEN)
-        
+
     def add_cross(self, cross_road):
         self._cross.append(cross_road)
+
 
 class Crossing():
 

@@ -29,8 +29,6 @@ class SystemManager(manager.Manager):
     def start_manager(self):
         self.started = datetime.now()
 
-        print('started ok')
-
         self.start_monitor()
 
     def end_manager(self):
