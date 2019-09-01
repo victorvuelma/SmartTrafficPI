@@ -1,6 +1,7 @@
 from enum import Enum
 from os import getenv
 from base64 import b64decode, b64encode
+from datetime import datetime
 import json
 
 from paho.mqtt import client as mqttClient
@@ -88,6 +89,9 @@ class NetworkManager(manager.Manager):
             cprint('[NETWORK] Disconnected from MQTT.', 'red')
 
     def send_payload(self, channel, payload={}):
+        if(not 'time' in payload):
+            payload['time'] = datetime.now().timestamp()
+
         if(self.state is NetworkState.CONNECTED):
             self.client.publish(f'st/{channel}',
                                 NetworkUtil.encode_payload(payload))

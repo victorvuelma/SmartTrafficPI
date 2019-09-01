@@ -9,7 +9,7 @@ from smarttraffic.manager.network_manager import _manager as network_manager
 from smarttraffic.manager.system_manager import _manager as system_manager
 from smarttraffic.manager.task_manager import _manager as task_manager
 
-from smarttraffic.element import road, crossing
+from smarttraffic.element import road, crossing, trafficlight
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,6 +29,9 @@ def init():
     system_manager.start()
     network_manager.start()
     cprint('ST => Start complete.', 'green')
+
+    light = trafficlight.TrafficLight('test',
+                                      trafficlight.TrafficLightMode.DEFAULT)
 
     if(getenv('raspberry') == True):
         loadSys()
