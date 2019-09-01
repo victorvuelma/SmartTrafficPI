@@ -18,14 +18,14 @@ class NetworkState(Enum):
 class NetworkUtil():
 
     @staticmethod
-    def encode_message(msg={}):
+    def encode_payload(msg={}):
         data = str(msg).encode('utf-8')
         data = b64encode(data)
 
         return data
 
     @staticmethod
-    def decode_message(data):
+    def decode_payload(data):
         msg = b64decode(data)
         msg = eval(msg)
 
@@ -38,6 +38,7 @@ class NetworkManager(manager.Manager):
         super().__init__()
         self.client = None
         self.state = NetworkState.WAITING
+        self.listeners = {}
 
     def init_manager(self):
         self.open_mqtt()
@@ -47,6 +48,16 @@ class NetworkManager(manager.Manager):
 
     def send_mqtt(self):
         pass
+
+    def receive_message(self, client, user, message):
+        payload = NetworkUtil.decode_payload(message.payload)
+        channel = message.topic
+
+        cprint(f'[{channel}] -> {payload}', 'yellow')
+
+        if(channel in self.listeners):
+            listener = self.listeners[channel]
+            listener(payload, client)
 
     def open_mqtt(self):
         if(self.state is not NetworkState.CONNECTED):
@@ -59,31 +70,37 @@ class NetworkManager(manager.Manager):
             cprint('[NETWORK] Connecting to MQTT...', 'yellow')
 
             self.client = mqttClient.Client()
-            self.client.username_pw_set(MQTT_USER, password=MQTT_PASS)
             self.client.on_message = self.receive_message
+
+            self.client.username_pw_set(MQTT_USER, password=MQTT_PASS)
             self.client.connect(MQTT_HOST, port=MQTT_PORT)
+
             self.client.loop_start()
+
             self.state = NetworkState.CONNECTED
-
             cprint('[NETWORK] Connected to MQTT.', 'green')
-
-            self.client.subscribe('st/traffic')
-            self.send_message('st/traffic', {
-                'oi': 'oi'
-            })
 
     def close_mqtt(self):
         if(self.state is NetworkState.CONNECTED):
             self.client.disconnect()
             self.state = NetworkState.CLOSED
 
-    def send_message(self, ch, msg={}):
-        if(self.state is NetworkState.CONNECTED):
-            self.client.publish(ch, NetworkUtil.encode_message(msg))
+            cprint('[NETWORK] Disconnected from MQTT.', 'red')
 
-    def receive_message(self, client, user, message):
-        msg = NetworkUtil.decode_message(message.payload)
-        print(f'[{client}] {msg}')
+    def send_payload(self, channel, payload={}):
+        if(self.state is NetworkState.CONNECTED):
+            self.client.publish(f'st/{channel}',
+                                NetworkUtil.encode_payload(payload))
+
+    def listen(self, channel, listener):
+        channel = f'st/{channel}'
+
+        if(self.state is NetworkState.CONNECTED):
+            self.client.subscribe(channel)
+
+        self.listeners[channel] = listener
+
+        cprint(f'[NETWORK] Start listen at {channel}', 'green')
 
 
 network_manager = NetworkManager()
