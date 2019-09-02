@@ -54,7 +54,7 @@ class NetworkManager(manager.Manager):
         payload = NetworkUtil.decode_payload(message.payload)
         channel = message.topic
 
-        cprint(f'[{channel}] -> {payload}', 'yellow')
+        cprint(f'[NETWORK -> {channel}]: {payload}', 'yellow')
 
         if(channel in self.listeners):
             listener = self.listeners[channel]
@@ -68,7 +68,7 @@ class NetworkManager(manager.Manager):
             MQTT_HOST = getenv('MQTT_HOST')
             MQTT_PORT = int(getenv('MQTT_PORT'))
 
-            cprint('[NETWORK] Connecting to MQTT...', 'yellow')
+            cprint('[MANAGER/network] Connecting to MQTT...', 'yellow')
 
             self.client = mqttClient.Client()
             self.client.on_message = self.receive_message
@@ -79,14 +79,14 @@ class NetworkManager(manager.Manager):
             self.client.loop_start()
 
             self.network_state = NetworkState.CONNECTED
-            cprint('[NETWORK] Connected to MQTT.', 'green')
+            cprint('[MANAGER/network] Connected to MQTT.', 'green')
 
     def close_mqtt(self):
         if(self.network_state is NetworkState.CONNECTED):
             self.client.disconnect()
             self.network_state = NetworkState.CLOSED
 
-            cprint('[NETWORK] Disconnected from MQTT.', 'red')
+            cprint('[MANAGER/network] Disconnected from MQTT.', 'red')
 
     def send_payload(self, channel, payload={}):
         if(not 'time' in payload):
@@ -94,7 +94,7 @@ class NetworkManager(manager.Manager):
 
         if(self.network_state is NetworkState.CONNECTED):
             self.client.publish(f'st/{channel}',
-                                NetworkUtil.encode_payload(payload))
+                                payload=NetworkUtil.encode_payload(payload))
 
     def listen(self, channel, listener):
         channel = f'st/{channel}'
@@ -104,7 +104,7 @@ class NetworkManager(manager.Manager):
 
         self.listeners[channel] = listener
 
-        cprint(f'[NETWORK] Start listen at {channel}', 'green')
+        cprint(f'[MANAGER/network] Start listen at {channel}', 'green')
 
 
 _manager = NetworkManager()

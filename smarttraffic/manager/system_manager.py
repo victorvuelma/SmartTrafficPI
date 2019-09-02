@@ -64,7 +64,7 @@ class SystemManager(manager.Manager):
         return "".join(strings)
 
     def send_monitor(self):
-        cprint('[SYSTEM MGR] Current system status:', 'yellow')
+        cprint('[SYSTEM/monitor] Current system status:', 'yellow')
 
         now = datetime.now()
         running = now - self.started
@@ -73,10 +73,10 @@ class SystemManager(manager.Manager):
         if(getenv('raspberry') == True):
             _cpu = CPUTemperature()
             _load = LoadAverage()
-            cprint('[CPU Temperature] %0.2f ºC' % (_cpu.temperature), 'red')
-            cprint(f'[LOAD] {_load.load_average}', 'green')
+            cprint('[CPU/temp.] %0.2f ºC' % (_cpu.temperature), 'red')
+            cprint(f'[CPU/load] {_load.load_average}', 'green')
 
-        cprint(f'[TIME] Running for {running}', 'yellow')
+        cprint(f'[SYSTEM/time] Running for {running}', 'yellow')
 
 
 _manager = SystemManager()

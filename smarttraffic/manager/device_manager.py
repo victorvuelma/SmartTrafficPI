@@ -20,24 +20,24 @@ class DeviceManager(manager.Manager):
 
     def test_devices(self):
         confirm = input(
-            '[DEVICE Manager] Do you really want to test all devices? (Y/n) ')
+            '[MANAGER/device] Do you really want to test all devices? (Y/n) ')
 
         if confirm == 'Y':
-            cprint(f'[DEVICE Manager] Testing all devices...', 'yellow')
+            cprint(f'[MANAGER/device] Testing all devices...', 'yellow')
 
             for target_device in self._devices:
                 target_device.test_device()
                 sleep(1)
 
-            cprint(f'[DEVICE Manager] Test ended', 'green')
+            cprint(f'[MANAGER/device] Test ended', 'green')
         else:
-            cprint(f'[DEVICE Manager] Test cancelled', 'red')
+            cprint(f'[MANAGER/device] Test cancelled', 'red')
 
     def link_device(self, target_device: device.Device):
         self._devices.append(target_device)
 
     def setup_devices(self):
-        print(f'[DEVICE Manager] Setup all devices...')
+        cprint(f'[MANAGER/device] Setup all devices...', 'green')
         for target_device in self._devices:
             self.setup_device(target_device)
 
@@ -46,7 +46,7 @@ class DeviceManager(manager.Manager):
             target_device.setup_device()
 
     def init_devices(self):
-        print(f'[DEVICE Manager] Init all devices...')
+        cprint(f'[MANAGER/device] Init all devices...', 'green')
         for target_device in self._devices:
             self.init_device(target_device)
 

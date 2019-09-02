@@ -95,10 +95,11 @@ class TaskManager(manager.Manager):
                 task.state = TaskState.START
                 task.start()
 
-                cprint(f'[TASK] Started task {taskId}.', 'green')
+                cprint(f'[MANAGER/task] Started task {taskId}.', 'green')
 
         else:
-            cprint(f'[TASK] Try to start task {taskId}, not found.', 'red')
+            cprint(
+                f'[MANAGER/task] Try to start task {taskId}, not found.', 'red')
 
     def end_task(self, taskId):
         if taskId in self.tasks:

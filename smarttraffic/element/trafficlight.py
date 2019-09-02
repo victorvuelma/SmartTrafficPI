@@ -4,7 +4,7 @@ from datetime import datetime
 from termcolor import cprint
 
 from smarttraffic.device import trafficlight_device
-from smarttraffic.manager import task_manager, network_manager
+from smarttraffic.manager import task_manager, network_manager, traffic_manager
 
 
 class TrafficState(Enum):
@@ -27,8 +27,7 @@ class TrafficState(Enum):
 
 class TrafficLightPhase:
 
-    def __init__(self, state: TrafficState, duration=1.0,
-                 nextPhase=None):
+    def __init__(self, state: TrafficState, duration=1.0, nextPhase=None):
         self.state = state
         self.duration = duration
         self.next = nextPhase
@@ -59,9 +58,9 @@ def buildDefaultPhases():
 
 class TrafficLight:
 
-    def __init__(self, id, mode=TrafficLightMode.YELLOW):
+    def __init__(self, slug, mode=TrafficLightMode.YELLOW):
         super().__init__()
-        self.id = id
+        self.slug = slug
 
         self.changeState(TrafficState.NONE)
 
@@ -70,6 +69,8 @@ class TrafficLight:
         self.task = TrafficLightTask(self)
         task_manager._manager.create_task(self.task)
         task_manager._manager.start_task(self.task.id)
+
+        traffic_manager._manager.register(self)
 
     def changeMode(self, mode: TrafficLightMode):
         if(mode is TrafficLightMode.YELLOW):
@@ -126,7 +127,7 @@ class TrafficLight:
 class TrafficLightTask(task_manager.Task):
 
     def __init__(self, light: TrafficLight):
-        super().__init__(f'trafficlight/{light.id}', 1, True)
+        super().__init__(f'tl/{light.slug}/main', 1, True)
         self.light = light
 
     def execute(self):
@@ -138,11 +139,11 @@ class TrafficLightTask(task_manager.Task):
                     next = self.light.nextPhase
 
                     cprint(
-                        f'[TRAFFICLIGHT/{self.light.id}] Change state to {next.state}.',
+                        f'[TRAFFICLIGHT/{self.light.slug}] Change state to {next.state}.',
                         ('yellow' if next.state is TrafficState.NONE else next.state.stateLight().name.lower()))
 
                     network_manager._manager.send_payload('traffic_light', {
-                        'id': self.light.id,
+                        'slug': self.light.slug,
                         'action': 'change_state',
                         'state': next.state.name
                     })

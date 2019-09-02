@@ -9,6 +9,7 @@ from smarttraffic.manager.device_manager import _manager as device_manager
 from smarttraffic.manager.network_manager import _manager as network_manager
 from smarttraffic.manager.system_manager import _manager as system_manager
 from smarttraffic.manager.task_manager import _manager as task_manager
+from smarttraffic.manager.traffic_manager import _manager as traffic_manager
 from smarttraffic.manager.task_manager import Task
 
 from smarttraffic.element import road, crossing, trafficlight
@@ -24,12 +25,14 @@ def init():
     task_manager.init()
     system_manager.init()
     network_manager.init()
+    traffic_manager.init()
     cprint('ST => Init complete.', 'green')
 
     cprint('ST => Starting...', 'yellow')
     task_manager.start()
     system_manager.start()
     network_manager.start()
+    traffic_manager.start()
     cprint('ST => Start complete.', 'green')
 
     light_paulista_a = trafficlight.TrafficLight(
@@ -41,8 +44,8 @@ def init():
 
     cross_paulista_bela_cintra = crossing.Crossing()
 
-    road_av_paulista = road.TwoWaysRoad('Av. Paulista')
-    road_bela_cintra = road.Road('Rua Bela Cintra')
+    road_av_paulista = road.TwoWaysRoad('av_paulista', 'Av. Paulista')
+    road_bela_cintra = road.Road('rua_bela_cintra', 'Rua Bela Cintra')
 
     cross_road_bela_cintra = crossing.CrossingRoad(road_bela_cintra)
     cross_road_bela_cintra.link_traffic_light(light_bela_cintra)
@@ -95,13 +98,15 @@ def init():
 
         if open is 'c':
             print('open bela cintra')
-            cross_road_bela_cintra.request_open()
 
+            cross_road_bela_cintra.request_open()
         elif open is 'a':
             print('open paulista a')
+
             cross_road_av_paulista_a.request_open()
         elif open is 'b':
             print('open paulista b')
+
             cross_road_av_paulista_b.request_open()
 
     if(getenv('raspberry') == True):
@@ -116,26 +121,22 @@ def loadSys():
     sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
         'paulista_b', 2)
 
+    light_bela_cintra = trafficlight_device.TrafficLightDevice(
+        'bela_cintra', 16, 20, 21)
     light_paulista_a = trafficlight_device.TrafficLightDevice(
         'paulista_a', 14, 15, 18)
     light_paulista_b = trafficlight_device.TrafficLightDevice(
         'paulista_b', 25, 8, 7)
-    light_bela_cintra = trafficlight_device.TrafficLightDevice(
-        'bela_cintra', 16, 20, 21)
 
-    device_manager.link_device(light_paulista_a)
-    device_manager.link_device(light_paulista_b)
-    device_manager.link_device(light_bela_cintra)
-    device_manager.link_device(sensor_bela_cintra)
-    device_manager.link_device(sensor_paulista_a)
-    device_manager.link_device(sensor_paulista_b)
+    devices = [sensor_bela_cintra, sensor_paulista_a, sensor_paulista_b,
+               light_bela_cintra, light_paulista_a, light_paulista_b]
 
     device_manager.init()
 
     cross_paulista_bela_cintra = crossing.Crossing()
 
-    road_av_paulista = road.TwoWaysRoad('Av. Paulista')
-    road_bela_cintra = road.Road('Rua Bela Cintra')
+    road_av_paulista = road.TwoWaysRoad('av_paulista', 'Av. Paulista')
+    road_bela_cintra = road.Road('rua_bela_cintra', 'Rua Bela Cintra')
 
     cross_road_bela_cintra = crossing.CrossingRoad(road_bela_cintra)
     cross_road_bela_cintra.link_traffic_light(light_bela_cintra)
