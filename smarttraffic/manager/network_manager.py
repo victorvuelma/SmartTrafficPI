@@ -38,7 +38,7 @@ class NetworkManager(manager.Manager):
     def __init__(self):
         super().__init__()
         self.client = None
-        self.state = NetworkState.WAITING
+        self.network_state = NetworkState.WAITING
         self.listeners = {}
 
     def init_manager(self):
@@ -61,7 +61,7 @@ class NetworkManager(manager.Manager):
             listener(payload, client)
 
     def open_mqtt(self):
-        if(self.state is not NetworkState.CONNECTED):
+        if(self.network_state is not NetworkState.CONNECTED):
 
             MQTT_USER = getenv('MQTT_USER')
             MQTT_PASS = getenv('MQTT_PASS')
@@ -78,13 +78,13 @@ class NetworkManager(manager.Manager):
 
             self.client.loop_start()
 
-            self.state = NetworkState.CONNECTED
+            self.network_state = NetworkState.CONNECTED
             cprint('[NETWORK] Connected to MQTT.', 'green')
 
     def close_mqtt(self):
-        if(self.state is NetworkState.CONNECTED):
+        if(self.network_state is NetworkState.CONNECTED):
             self.client.disconnect()
-            self.state = NetworkState.CLOSED
+            self.network_state = NetworkState.CLOSED
 
             cprint('[NETWORK] Disconnected from MQTT.', 'red')
 
@@ -92,14 +92,14 @@ class NetworkManager(manager.Manager):
         if(not 'time' in payload):
             payload['time'] = datetime.now().timestamp()
 
-        if(self.state is NetworkState.CONNECTED):
+        if(self.network_state is NetworkState.CONNECTED):
             self.client.publish(f'st/{channel}',
                                 NetworkUtil.encode_payload(payload))
 
     def listen(self, channel, listener):
         channel = f'st/{channel}'
 
-        if(self.state is NetworkState.CONNECTED):
+        if(self.network_state is NetworkState.CONNECTED):
             self.client.subscribe(channel)
 
         self.listeners[channel] = listener
