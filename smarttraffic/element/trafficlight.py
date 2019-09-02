@@ -141,9 +141,10 @@ class TrafficLightTask(task_manager.Task):
                         f'[TRAFFICLIGHT/{self.light.id}] Change state to {next.state}.',
                         ('yellow' if next.state is TrafficState.NONE else next.state.stateLight().name.lower()))
 
-                    network_manager._manager.send_payload('trafficlight', {
-                        id: self.light.id,
-                        next: next.state
+                    network_manager._manager.send_payload('traffic_light', {
+                        'id': self.light.id,
+                        'action': 'change_state',
+                        'state': next.state.name
                     })
 
                     self.light.changePhase(next)
