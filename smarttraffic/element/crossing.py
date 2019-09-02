@@ -1,7 +1,6 @@
 from time import sleep
 
-from smarttraffic.element import road
-from smarttraffic.device import trafficlight_device
+from smarttraffic.element import road, trafficlight
 
 
 class CrossingRoad():
@@ -10,29 +9,25 @@ class CrossingRoad():
         self._lights = []
         self._cross = []
         self._road = target_road
+        self._light = None
 
-    def link_traffic_light(self, target_light: trafficlight_device.TrafficLightDevice):
-        self._lights.append(target_light)
+    def link_traffic_light(self, traffic_light: trafficlight.TrafficLight):
+        self._light = traffic_light
 
     def request_close(self):
-        sleep(0.5)
-
-        for target_light in self._lights:
-            if(target_light._light is trafficlight_device.Light.GREEN):
-                target_light.change_light(trafficlight_device.Light.YELLOW)
-
-        sleep(1)
-
-        for target_light in self._lights:
-            if(target_light._light is trafficlight_device.Light.YELLOW):
-                target_light.change_light(trafficlight_device.Light.RED)
+        if self._light is not None:
+            if self._light.currentState is not trafficlight.TrafficState.CLOSED:
+                self._light.modifyNext(
+                    trafficlight.TrafficState.CLOSING, 5)
 
     def request_open(self):
         for cross_road in self._cross:
             cross_road.request_close()
 
-        for target_light in self._lights:
-            target_light.change_light(trafficlight_device.Light.GREEN)
+        if self._light is not None:
+            if self._light.currentState is not trafficlight.TrafficState.OPEN:
+                self._light.modifyNext(
+                    trafficlight.TrafficState.OPENING, 8)
 
     def add_cross(self, cross_road):
         self._cross.append(cross_road)

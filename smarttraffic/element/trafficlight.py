@@ -8,20 +8,30 @@ from smarttraffic.manager import task_manager, network_manager
 
 
 class TrafficState(Enum):
-    NONE = trafficlight_device.Light.NONE
-    OPEN = trafficlight_device.Light.GREEN
-    CLOSING = trafficlight_device.Light.YELLOW
-    CLOSED = trafficlight_device.Light.RED
-    OPENING = trafficlight_device.Light.YELLOW
+    NONE = 0
+    OPEN = 1
+    CLOSING = 2
+    CLOSED = 3
+    OPENING = 4
+
+    def stateLight(self):
+        if self is TrafficState.NONE:
+            return trafficlight_device.Light.NONE
+        elif self is TrafficState.OPEN:
+            return trafficlight_device.Light.GREEN
+        elif self is TrafficState.CLOSED:
+            return trafficlight_device.Light.RED
+        else:
+            return trafficlight_device.Light.YELLOW
 
 
 class TrafficLightPhase:
 
     def __init__(self, state: TrafficState, duration=1.0,
-                 next=None):
+                 nextPhase=None):
         self.state = state
         self.duration = duration
-        self.next = next
+        self.next = nextPhase
 
 
 class TrafficLightMode(Enum):
@@ -37,19 +47,19 @@ def buildYellowBlinkPhases():
     return [yellow, none]
 
 
-def buildDefaultPhases(greenDuration=20, redDuration=20):
+def buildDefaultPhases():
     opening = TrafficLightPhase(TrafficState.OPENING, 3)
-    closed = TrafficLightPhase(TrafficState.CLOSED, redDuration, opening)
+    closed = TrafficLightPhase(TrafficState.CLOSED, None, opening)
     closing = TrafficLightPhase(TrafficState.CLOSING, 3, closed)
-    green = TrafficLightPhase(TrafficState.OPEN, greenDuration, closing)
-    opening.next = green
+    open = TrafficLightPhase(TrafficState.OPEN, None, closing)
+    opening.next = open
 
-    return [opening, closed, closing, green]
+    return [opening, closed, closing, open]
 
 
 class TrafficLight:
 
-    def __init__(self, id, mode: TrafficLightMode):
+    def __init__(self, id, mode=TrafficLightMode.YELLOW):
         super().__init__()
         self.id = id
 
@@ -74,7 +84,7 @@ class TrafficLight:
 
     def updateDevice(self):
         if hasattr(self, 'device'):
-            self.device.change_light(self.currentPhase.state)
+            self.device.change_light(self.currentPhase.state.stateLight())
 
     def changePhases(self, phases: []):
         self.phases = phases
@@ -87,7 +97,11 @@ class TrafficLight:
         self.phaseTime = datetime.now().timestamp()
 
         self.nextPhase = phase.next
-        self.nextPhaseTime = self.phaseTime + self.currentPhase.duration
+
+        if self.currentPhase.duration is not None:
+            self.nextPhaseTime = self.phaseTime + self.currentPhase.duration
+        else:
+            self.nextPhaseTime = None
 
         self.changeState(self.currentPhase.state)
 
@@ -95,6 +109,18 @@ class TrafficLight:
         self.currentState = state
 
         self.updateDevice()
+
+    def modifyNext(self, state: TrafficState, time):
+        for phase in self.phases:
+            if phase.state is state:
+
+                nextTime = datetime.now().timestamp() + time
+
+                if self.nextPhaseTime is None or nextTime < self.nextPhaseTime:
+                    self.nextPhaseTime = nextTime
+
+                self.nextPhase = phase
+                break
 
 
 class TrafficLightTask(task_manager.Task):
@@ -105,18 +131,19 @@ class TrafficLightTask(task_manager.Task):
 
     def execute(self):
         if self.light.nextPhase is not None:
-            now = datetime.now().timestamp()
-            if now > self.light.nextPhaseTime:
+            if self.light.nextPhaseTime is not None:
+                now = datetime.now().timestamp()
+                if now > self.light.nextPhaseTime:
 
-                next = self.light.nextPhase
+                    next = self.light.nextPhase
 
-                cprint(
-                    f'[TRAFFICLIGHT/{self.light.id}] Change state to {next.state}.',
-                    ('yellow' if next.state is TrafficState.NONE else next.state.value.name.lower()))
+                    cprint(
+                        f'[TRAFFICLIGHT/{self.light.id}] Change state to {next.state}.',
+                        ('yellow' if next.state is TrafficState.NONE else next.state.stateLight().name.lower()))
 
-                network_manager._manager.send_payload('trafficlight', {
-                    id: self.light.id,
-                    next: next.state
-                })
+                    network_manager._manager.send_payload('trafficlight', {
+                        id: self.light.id,
+                        next: next.state
+                    })
 
-                self.light.changePhase(next)
+                    self.light.changePhase(next)
