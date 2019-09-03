@@ -20,7 +20,8 @@ class NetworkUtil():
 
     @staticmethod
     def encode_payload(msg={}):
-        data = str(msg).encode('utf-8')
+        data = json.dumps(msg)
+        data = data.encode('utf-8')
         data = b64encode(data)
 
         return data
@@ -29,6 +30,7 @@ class NetworkUtil():
     def decode_payload(data):
         msg = b64decode(data)
         msg = eval(msg)
+        msg = json.loads(msg)
 
         return msg
 
@@ -89,8 +91,8 @@ class NetworkManager(manager.Manager):
             cprint('[MANAGER/network] Disconnected from MQTT.', 'red')
 
     def send_payload(self, channel, payload={}):
-        if(not 'time' in payload):
-            payload['time'] = datetime.now().timestamp()
+        if(not "time" in payload):
+            payload["time"] = datetime.now().timestamp()
 
         if(self.network_state is NetworkState.CONNECTED):
             self.client.publish(f'st/{channel}',
