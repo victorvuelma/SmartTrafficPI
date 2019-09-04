@@ -36,11 +36,11 @@ def init():
     cprint('ST => Start complete.', 'green')
 
     light_paulista_a = trafficlight.TrafficLight(
-        'paulista_a', trafficlight.TrafficLightMode.DEFAULT)
+        'av_paulista_a', trafficlight.TrafficLightMode.DEFAULT)
     light_paulista_b = trafficlight.TrafficLight(
-        'paulista_b', trafficlight.TrafficLightMode.DEFAULT)
+        'av_paulista_b', trafficlight.TrafficLightMode.DEFAULT)
     light_bela_cintra = trafficlight.TrafficLight(
-        'bela_cintra', trafficlight.TrafficLightMode.DEFAULT)
+        'rua_bela_cintra', trafficlight.TrafficLightMode.DEFAULT)
 
     cross_paulista_bela_cintra = crossing.Crossing()
 

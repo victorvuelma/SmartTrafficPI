@@ -1,6 +1,7 @@
 from time import sleep
 
 from smarttraffic.element import road, trafficlight
+from smarttraffic.manager import traffic_manager
 
 
 class CrossingRoad():
@@ -10,6 +11,9 @@ class CrossingRoad():
         self._cross = []
         self._road = target_road
         self._light = None
+        self.slug = target_road.slug
+
+        traffic_manager._manager.crossroad_register(self)
 
     def link_traffic_light(self, traffic_light: trafficlight.TrafficLight):
         self._light = traffic_light

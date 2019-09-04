@@ -70,7 +70,7 @@ class TrafficLight:
         task_manager._manager.create_task(self.task)
         task_manager._manager.start_task(self.task.id)
 
-        traffic_manager._manager.register(self)
+        traffic_manager._manager.light_register(self)
 
     def changeMode(self, mode: TrafficLightMode):
         if(mode is TrafficLightMode.YELLOW):

@@ -30,7 +30,6 @@ class NetworkUtil():
     def decode_payload(data):
         msg = b64decode(data)
         msg = eval(msg)
-        msg = json.loads(msg)
 
         return msg
 
