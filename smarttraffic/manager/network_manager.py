@@ -85,6 +85,8 @@ class NetworkManager(manager.Manager):
 
     def close_mqtt(self):
         if(self.network_state is NetworkState.CONNECTED):
+            self.client.loop_stop()
+
             self.client.disconnect()
             self.network_state = NetworkState.CLOSED
 
