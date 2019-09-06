@@ -18,15 +18,15 @@ class TaskState(Enum):
 
 class Task(threading.Thread):
 
-    def __init__(self, id, delay=10, reapeating=True):
+    def __init__(self, slug, delay=10, repeating=True):
         super().__init__()
-        self.id = id
+        self.slug = slug
         self.delay = delay
-        self.repeating = reapeating
+        self.repeating = repeating
         self.state = TaskState.WAITING
 
     def run(self):
-        while(self.state is TaskState.WAITING):
+        while self.state is TaskState.WAITING:
             pass
 
         if self.repeating:
@@ -76,34 +76,34 @@ class TaskManager(manager.Manager):
         sleep(1)
         cprint('[THREAD Manager] All threads ended', 'yellow')
 
-    def find_task(self, taskId):
-        return self.tasks[taskId]
+    def find_task(self, task_id):
+        return self.tasks[task_id]
 
     def create_task(self, task: Task):
-        self.end_task(task.id)
+        self.end_task(task.slug)
 
-        self.tasks[task.id] = task
+        self.tasks[task.slug] = task
 
         if self.state is manager.State.RUNNING:
-            self.start_task(task.id)
+            self.start_task(task.slug)
 
-    def start_task(self, taskId):
-        if taskId in self.tasks:
-            task = self.tasks[taskId]
+    def start_task(self, task_id):
+        if task_id in self.tasks:
+            task = self.tasks[task_id]
 
             if task.state is not TaskState.RUNNING and task.state is not TaskState.STOPPING:
                 task.state = TaskState.START
                 task.start()
 
-                cprint(f'[MANAGER/task] Started task {taskId}.', 'green')
+                cprint(f'[MANAGER/task] Started task {task_id}.', 'green')
 
         else:
             cprint(
-                f'[MANAGER/task] Try to start task {taskId}, not found.', 'red')
+                f'[MANAGER/task] Try to start task {task_id}, not found.', 'red')
 
-    def end_task(self, taskId):
-        if taskId in self.tasks:
-            task = self.tasks[taskId]
+    def end_task(self, task_id):
+        if task_id in self.tasks:
+            task = self.tasks[task_id]
 
             if task.state is TaskState.START or task.state is TaskState.RUNNING:
                 task.STATE = TaskState.STOP

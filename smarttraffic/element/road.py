@@ -3,7 +3,7 @@ import random
 from termcolor import cprint
 
 
-class Road():
+class Road:
 
     def __init__(self, slug, name):
         self._uuid = hash(random.getrandbits(128))
@@ -14,7 +14,7 @@ class Road():
         cprint(f'[ROAD/{self.slug}] Created with name {self.name}', 'green')
 
 
-class TwoWaysRoad():
+class TwoWaysRoad:
 
     def __init__(self, slug, name):
         self._uuid = hash(random.getrandbits(128))

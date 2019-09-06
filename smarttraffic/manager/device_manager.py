@@ -33,16 +33,23 @@ class DeviceManager(manager.Manager):
         else:
             cprint(f'[MANAGER/device] Test cancelled', 'red')
 
-    def link_device(self, target_device: device.Device):
+    def link_device(self, target_device):
         self._devices.append(target_device)
+
+        if self.state is manager.State.INITIALIZED or self.state is manager.State.WAITING:
+            self.setup_device(target_device)
+
+        if self.state is manager.State.WAITING:
+            self.init_device(target_device)
+
 
     def setup_devices(self):
         cprint(f'[MANAGER/device] Setup all devices...', 'green')
         for target_device in self._devices:
             self.setup_device(target_device)
 
-    def setup_device(self, target_device: device.Device):
-        if(target_device.state is device.State.WAITING):
+    def setup_device(self, target_device):
+        if target_device.state is device.State.WAITING:
             target_device.setup_device()
 
     def init_devices(self):
@@ -50,8 +57,8 @@ class DeviceManager(manager.Manager):
         for target_device in self._devices:
             self.init_device(target_device)
 
-    def init_device(self, target_device: device.Device):
-        if(target_device.state is device.State.SETUP):
+    def init_device(self, target_device):
+        if target_device.state is device.State.SETUP:
             target_device.init_device()
 
 

@@ -6,10 +6,11 @@ from smarttraffic.device import device
 
 class TrafficSensorDevice(device.Device):
 
-    def __init__(self, id, pin):
-        super().__init__(self, id)
+    def __init__(self, slug, pin):
         self._pin = pin
         self._sensor = None
+
+        super().__init__(self, slug)
 
     def _setup(self):
         self._sensor = Button(self._pin)
@@ -17,10 +18,9 @@ class TrafficSensorDevice(device.Device):
     def _hard_test(self):
         self._device_print('Place some material on sensor...')
 
-        while(True):
+        while True:
             print(self.find())
             if self.find():
-
                 break
 
     def pins(self):

@@ -7,19 +7,19 @@ class Manager(object):
         self.state = State.WAITING
 
     def init(self):
-        if(self.state is State.WAITING):
+        if self.state is State.WAITING:
             self.init_manager()
             self.state = State.INITIALIZED
 
     def start(self):
-        if(self.state is State.WAITING):
+        if self.state is State.WAITING:
             self.init_manager()
 
-        if(self.state is State.INITIALIZED or self.state is State.STOPPED):
+        if self.state is State.INITIALIZED or self.state is State.STOPPED:
             self.start_manager()
 
     def end(self):
-        if(self.state is State.RUNNING or self.state is State.STOPPED):
+        if self.state is State.RUNNING or self.state is State.STOPPED:
             self.end_manager()
 
     def init_manager(self):

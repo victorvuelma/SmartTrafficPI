@@ -2,6 +2,7 @@ import random
 from enum import Enum
 
 from termcolor import cprint
+from smarttraffic.manager import device_manager
 
 
 class State(Enum):
@@ -14,12 +15,14 @@ class State(Enum):
 
 class Device(object):
 
-    def __init__(self, device, id):
+    def __init__(self, device, slug):
         self._uuid = hash(random.getrandbits(128))
-        self.id = id
+        self.slug = slug
         self.state = State.WAITING
         cprint(
             f'[DEVICE {self._uuid}] Created a {device.__class__.__name__}', 'yellow')
+
+        device_manager._manager.link_device(self)
 
     def _init(self):
         pass
@@ -45,7 +48,7 @@ class Device(object):
         self._device_print('Test end')
 
     def setup_device(self):
-        if(self.state is State.WAITING):
+        if self.state is State.WAITING:
             self.state = State.SETUP
             self._setup()
             self._device_print(f'Done setup')
@@ -53,7 +56,7 @@ class Device(object):
             self._device_print(f'Cant run setup at state {self.state}')
 
     def init_device(self):
-        if(self.state is State.SETUP):
+        if self.state is State.SETUP:
             self.state = State.RUNNING
             self._init()
             self._device_print(f'Done init')

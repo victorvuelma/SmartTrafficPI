@@ -1,20 +1,18 @@
-import time
-from os import getenv
 from datetime import datetime
+from os import getenv
 
+from dotenv import load_dotenv
 from termcolor import cprint
 
-from smarttraffic.device import trafficlight_device, pedestrianlight_device, trafficsensor_device
+from smarttraffic.device import trafficlight_device, trafficsensor_device
+from smarttraffic.element import road, crossing, trafficlight
 from smarttraffic.manager.device_manager import _manager as device_manager
 from smarttraffic.manager.network_manager import _manager as network_manager
 from smarttraffic.manager.system_manager import _manager as system_manager
+from smarttraffic.manager.task_manager import Task
 from smarttraffic.manager.task_manager import _manager as task_manager
 from smarttraffic.manager.traffic_manager import _manager as traffic_manager
-from smarttraffic.manager.task_manager import Task
 
-from smarttraffic.element import road, crossing, trafficlight
-
-from dotenv import load_dotenv
 load_dotenv()
 
 
@@ -61,14 +59,12 @@ def init():
     cross_paulista_bela_cintra.add_road(cross_road_bela_cintra)
     cross_paulista_bela_cintra.add_road(cross_road_av_paulista_a)
 
-    cross_paulista_bela_cintra.add_cross(
-        cross_road_av_paulista_a, cross_road_bela_cintra)
-    cross_paulista_bela_cintra.add_cross(
-        cross_road_av_paulista_b, cross_road_bela_cintra)
+    crossing.Crossing.add_cross(cross_road_bela_cintra, cross_road_av_paulista_a)
+    crossing.Crossing.add_cross(cross_road_bela_cintra, cross_road_av_paulista_b)
 
-    light_bela_cintra.modifyNext(trafficlight.TrafficState.CLOSED, 0)
-    light_paulista_a.modifyNext(trafficlight.TrafficState.OPEN, 0)
-    light_paulista_b.modifyNext(trafficlight.TrafficState.OPEN, 0)
+    light_bela_cintra.state_next(trafficlight.TrafficState.CLOSED, 0)
+    light_paulista_a.state_next(trafficlight.TrafficState.OPEN, 0)
+    light_paulista_b.state_next(trafficlight.TrafficState.OPEN, 0)
 
     class MainTask(Task):
 
@@ -78,15 +74,15 @@ def init():
         def execute(self):
             now = datetime.now().timestamp()
 
-            if light_bela_cintra.currentState is trafficlight.TrafficState.OPEN:
-                duration = now - light_bela_cintra.phaseTime
+            if light_bela_cintra.current_state is trafficlight.TrafficState.OPEN:
+                duration = now - light_bela_cintra.phase_time
 
                 if duration > 12:
                     cross_road_av_paulista_a.request_open()
                     cross_road_av_paulista_b.request_open()
 
-            if light_paulista_a.currentState is trafficlight.TrafficState.OPEN:
-                duration = now - light_paulista_a.phaseTime
+            if light_paulista_a.current_state is trafficlight.TrafficState.OPEN:
+                duration = now - light_paulista_a.phase_time
 
                 if duration > 22:
                     cross_road_bela_cintra.request_open()
@@ -95,23 +91,9 @@ def init():
     task_manager.create_task(task)
     task_manager.start_task('main')
 
-    while(True):
-        open = input('Qual?')
+    if getenv('RASPBERRY') == 'TRUE':
+        print('go')
 
-        if open is 'c':
-            print('open bela cintra')
-
-            cross_road_bela_cintra.request_open()
-        elif open is 'a':
-            print('open paulista a')
-
-            cross_road_av_paulista_a.request_open()
-        elif open is 'b':
-            print('open paulista b')
-
-            cross_road_av_paulista_b.request_open()
-
-    if getenv('RASPBERRY') is True:
         sensor_bela_cintra = trafficsensor_device.TrafficSensorDevice(
             'bela_cintra', 4)
         sensor_paulista_a = trafficsensor_device.TrafficSensorDevice(
@@ -119,25 +101,20 @@ def init():
         sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
             'paulista_b', 2)
 
-        light_bela_cintra = trafficlight_device.TrafficLightDevice(
+        device_light_bela_cintra = trafficlight_device.TrafficLightDevice(
             'bela_cintra', 16, 20, 21)
-        light_paulista_a = trafficlight_device.TrafficLightDevice(
+        device_light_paulista_a = trafficlight_device.TrafficLightDevice(
             'paulista_a', 14, 15, 18)
-        light_paulista_b = trafficlight_device.TrafficLightDevice(
+        device_light_paulista_b = trafficlight_device.TrafficLightDevice(
             'paulista_b', 25, 8, 7)
 
-        devices = [sensor_bela_cintra, sensor_paulista_a, sensor_paulista_b,
-            light_bela_cintra, light_paulista_a, light_paulista_b]
-        for device in devices:
-            device_manager.link_device(device)
+        light_bela_cintra.device_link(device_light_bela_cintra)
 
-        cross_road_bela_cintra.link_traffic_light(light_bela_cintra)
+        light_paulista_a.device_link(device_light_paulista_a)
 
-        cross_road_av_paulista_a.link_traffic_light(light_paulista_a)
+        light_paulista_b.device_link(device_light_paulista_b)
 
-        cross_road_av_paulista_b.link_traffic_light(light_paulista_b)
-
-        while(True):
+        while True:
             if sensor_bela_cintra.find():
                 print('open bela cintra')
                 cross_road_bela_cintra.request_open()

@@ -16,10 +16,12 @@ class NetworkState(Enum):
     CLOSED = 2
 
 
-class NetworkUtil():
+class NetworkUtil:
 
     @staticmethod
-    def encode_payload(msg={}):
+    def encode_payload(msg=None):
+        if msg is None:
+            msg = {}
         data = json.dumps(msg)
         data = data.encode('utf-8')
         data = b64encode(data)
@@ -57,25 +59,25 @@ class NetworkManager(manager.Manager):
 
         cprint(f'[NETWORK -> {channel}]: {payload}', 'yellow')
 
-        if(channel in self.listeners):
+        if channel in self.listeners:
             listener = self.listeners[channel]
             listener(payload, client)
 
     def open_mqtt(self):
-        if(self.network_state is not NetworkState.CONNECTED):
+        if self.network_state is not NetworkState.CONNECTED:
 
-            MQTT_USER = getenv('MQTT_USER')
-            MQTT_PASS = getenv('MQTT_PASS')
-            MQTT_HOST = getenv('MQTT_HOST')
-            MQTT_PORT = int(getenv('MQTT_PORT'))
+            mqtt_user = getenv('MQTT_USER')
+            mqtt_pass = getenv('MQTT_PASS')
+            mqtt_host = getenv('MQTT_HOST')
+            mqtt_port = int(getenv('MQTT_PORT'))
 
             cprint('[MANAGER/network] Connecting to MQTT...', 'yellow')
 
             self.client = mqttClient.Client()
             self.client.on_message = self.receive_message
 
-            self.client.username_pw_set(MQTT_USER, password=MQTT_PASS)
-            self.client.connect(MQTT_HOST, port=MQTT_PORT)
+            self.client.username_pw_set(mqtt_user, password=mqtt_pass)
+            self.client.connect(mqtt_host, port=mqtt_port)
 
             self.client.loop_start()
 
@@ -83,7 +85,7 @@ class NetworkManager(manager.Manager):
             cprint('[MANAGER/network] Connected to MQTT.', 'green')
 
     def close_mqtt(self):
-        if(self.network_state is NetworkState.CONNECTED):
+        if self.network_state is NetworkState.CONNECTED:
             self.client.loop_stop()
 
             self.client.disconnect()
@@ -91,18 +93,21 @@ class NetworkManager(manager.Manager):
 
             cprint('[MANAGER/network] Disconnected from MQTT.', 'red')
 
-    def send_payload(self, channel, payload={}):
-        if(not "time" in payload):
+    def send_payload(self, channel, payload=None):
+        if payload is None:
+            payload = {}
+
+        if "time" not in payload:
             payload["time"] = datetime.now().timestamp()
 
-        if(self.network_state is NetworkState.CONNECTED):
+        if self.network_state is NetworkState.CONNECTED:
             self.client.publish(f'st/{channel}',
                                 payload=NetworkUtil.encode_payload(payload))
 
     def listen(self, channel, listener):
         channel = f'st/{channel}'
 
-        if(self.network_state is NetworkState.CONNECTED):
+        if self.network_state is NetworkState.CONNECTED:
             self.client.subscribe(channel)
 
         self.listeners[channel] = listener

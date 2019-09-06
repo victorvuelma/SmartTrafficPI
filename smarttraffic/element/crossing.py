@@ -1,10 +1,8 @@
-from time import sleep
-
 from smarttraffic.element import road, trafficlight
 from smarttraffic.manager import traffic_manager
 
 
-class CrossingRoad():
+class CrossingRoad:
 
     def __init__(self, target_road: road.Road):
         self._lights = []
@@ -21,7 +19,7 @@ class CrossingRoad():
     def request_close(self):
         if self._light is not None:
             if self._light.currentState is not trafficlight.TrafficState.CLOSED:
-                self._light.modifyNext(
+                self._light.state_next(
                     trafficlight.TrafficState.CLOSING, 5)
 
     def request_open(self):
@@ -30,20 +28,21 @@ class CrossingRoad():
 
         if self._light is not None:
             if self._light.currentState is not trafficlight.TrafficState.OPEN:
-                self._light.modifyNext(
+                self._light.state_next(
                     trafficlight.TrafficState.OPENING, 8)
 
     def add_cross(self, cross_road):
         self._cross.append(cross_road)
 
 
-class Crossing():
+class Crossing:
 
     _roads = []
 
     def add_road(self, target_road: CrossingRoad):
         self._roads.append(target_road)
 
-    def add_cross(self, road_a: CrossingRoad, road_b: CrossingRoad):
+    @staticmethod
+    def add_cross(road_a: CrossingRoad, road_b: CrossingRoad):
         road_a.add_cross(road_b)
         road_b.add_cross(road_a)
