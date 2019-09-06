@@ -70,7 +70,7 @@ class SystemManager(manager.Manager):
         running = now - self.started
         running = self.td_format(running)
 
-        if(getenv('raspberry') == True):
+        if(getenv('RASPBERRY') == True):
             _cpu = CPUTemperature()
             _load = LoadAverage()
             cprint('[CPU/temp.] %0.2f ºC' % (_cpu.temperature), 'red')

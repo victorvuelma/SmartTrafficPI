@@ -109,7 +109,7 @@ def init():
 
             cross_road_av_paulista_b.request_open()
 
-    if(getenv('raspberry') == True):
+    if(getenv('RASPBERRY') == True):
         loadSys()
 
 
