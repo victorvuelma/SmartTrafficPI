@@ -1,7 +1,6 @@
 from datetime import datetime
 from os import getenv
 
-from gpiozero import CPUTemperature, LoadAverage
 from termcolor import cprint
 
 from smarttraffic.manager import manager, task_manager
@@ -72,10 +71,11 @@ class SystemManager(manager.Manager):
         running = self.td_format(running)
 
         if getenv('RASPBERRY') == 'TRUE':
-            _cpu = CPUTemperature()
-            _load = LoadAverage()
-            cprint('[CPU/temp.] %0.2f ºC' % _cpu.temperature, 'red')
-            cprint(f'[CPU/load] {_load.load_average}', 'green')
+            #_cpu = CPUTemperature()
+            #_load = LoadAverage()
+            #cprint('[CPU/temp.] %0.2f ºC' % _cpu.temperature, 'red')
+            #cprint(f'[CPU/load] {_load.load_average}', 'green')
+            pass
 
         cprint(f'[SYSTEM/time] Running for {running}', 'yellow')
 

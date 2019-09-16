@@ -25,10 +25,12 @@ class TrafficManager(manager.Manager):
                     cross = self.crossroad[slug]
                     cprint(f'[ROAD/{slug}] Receive command for {run}.', 'red')
 
-                    if run is 'open':
-                        cross.request_open()
-                    elif run is 'close':
-                        cross.request_close()
+                    if run is 'alter_state':
+                        state = payload['state']
+                        if state is 'open':
+                            cross.request_open()
+                        elif state is 'close':
+                            cross.request_close()
 
         network_manager.listen('cross', listen_cross)
 
