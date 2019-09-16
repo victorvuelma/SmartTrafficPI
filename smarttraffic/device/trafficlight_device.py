@@ -1,8 +1,8 @@
 from enum import Enum
-from gpiozero import LED
 from time import sleep
 
 from smarttraffic.device import device
+from smarttraffic.manager.device_manager import  _manager as device_manager
 
 
 class Light(Enum):
@@ -26,49 +26,43 @@ class TrafficLightDevice(device.Device):
     def pins(self):
         return [self.pin_led_r, self.pin_led_y, self.pin_led_g]
 
-    def leds(self):
-        return [self.led_g, self.led_y, self.led_r]
-
     def _setup(self):
-        self.led_g = LED(self.pin_led_g)
-        self.led_r = LED(self.pin_led_r)
-        self.led_y = LED(self.pin_led_y)
-
-        print('yey, setup!')
+        for pin in self.pins():
+            device_manager.pin_setup_output(pin)
 
     def _init(self):
         self.change_light(Light.RED)
 
     def _hard_test(self):
-        for led in self.leds():
-            led.off()
+        for pin in self.pins():
+            device_manager.pin_output(pin, False)
 
-        for led in self.leds():
-            led.on()
+        for pin in self.pins():
+            device_manager.pin_output(pin, True)
             sleep(0.5)
-            led.off()
+            device_manager.pin_output(pin, False)
             sleep(0.1)
 
     def _find_led(self, light: Light):
         if light is Light.RED:
-            return self.led_r
+            return self.pin_led_r
         elif light is Light.YELLOW:
-            return self.led_y
+            return self.pin_led_y
         elif light is Light.GREEN:
-            return self.led_g
+            return self.pin_led_g
         return None
 
     def change_light(self, light: Light):
         if self.state is device.State.RUNNING:
             current = self._find_led(self._light)
             if current is not None:
-                current.off()
+                device_manager.pin_output(current, False)
 
             self._light = light
 
             led = self._find_led(self._light)
             if led is not None:
-                led.on()
+                device_manager.pin_output(led, True)
         else:
             self._device_print(
                 f'Cant change traffic light at state {self.state}')

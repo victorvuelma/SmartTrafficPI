@@ -1,8 +1,8 @@
 from enum import Enum
-from gpiozero import LED
+import RPi.GPIO as gpio
 
 from smarttraffic.device import device
-
+from smarttraffic.manager.device_manager import _manager as device_manager
 
 class Light(Enum):
 
@@ -21,17 +21,17 @@ class PedestrianLightDevice(device.Device):
         super().__init__(self, slug)
 
     def _setup(self):
-        self._led_g = LED(self._pin_led_g)
-        self._led_r = LED(self._pin_led_r)
+        for pin in self.pins():
+            device_manager.pin_setup_output(pin)
 
     def _init(self):
         self.change_light(Light.RED)
 
     def _find_led(self, light: Light):
         if light is Light.RED:
-            return self._led_r
+            return self._pin_led_r
         elif light is Light.GREEN:
-            return self._led_g
+            return self._pin_led_g
         return None
 
     def pins(self):
@@ -41,12 +41,12 @@ class PedestrianLightDevice(device.Device):
         if self.state is device.State.RUNNING:
             current = self._find_led(self._light)
             if current is not None:
-                current.off()
+                device_manager.pin_output(current, False)
 
             self._light = light
 
             led = self._find_led(self._light)
             if led is not None:
-                led.on()
+                device_manager.pin_output(led, True)
         else:
             self._device_print(f'Cant light at state {self.state}')

@@ -1,4 +1,5 @@
 from time import sleep
+import RPi.GPIO as gpio
 
 from termcolor import cprint
 
@@ -13,10 +14,14 @@ class DeviceManager(manager.Manager):
         self._devices = []
 
     def init_manager(self):
+        self.setup_gpio()
         self.setup_devices()
 
     def start_manager(self):
         self.init_devices()
+
+    def end_manager(self):
+        self.cleanup_gpio()
 
     def test_devices(self):
         confirm = input(
@@ -42,6 +47,11 @@ class DeviceManager(manager.Manager):
         if self.state is manager.State.WAITING:
             self.init_device(target_device)
 
+    def cleanup_gpio(self):
+        gpio.cleanup()
+
+    def setup_gpio(self):
+        gpio.setmode(gpio.BOARD)
 
     def setup_devices(self):
         cprint(f'[MANAGER/device] Setup all devices...', 'green')
@@ -61,5 +71,19 @@ class DeviceManager(manager.Manager):
         if target_device.state is device.State.SETUP:
             target_device.init_device()
 
+    def pin_setup_output(self, pin):
+        gpio.setup(pin, gpio.OUT)
+
+    def pin_setup_pulldown(self, pin):
+        gpio.pud_down(pin)
+
+    def pin_output(self, pin, value=False):
+        if value:
+            gpio.output(pin, gpio.HIGH)
+        else:
+            gpio.output(pin, gpio.LOW)
+
+    def pin_input(self, pin):
+        return gpio.input(pin)
 
 _manager = DeviceManager()
