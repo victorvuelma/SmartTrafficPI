@@ -92,21 +92,19 @@ def init():
     task_manager.start_task('main')
 
     if getenv('RASPBERRY') == 'TRUE':
-        print('go')
-
         sensor_bela_cintra = trafficsensor_device.TrafficSensorDevice(
-            'bela_cintra', 4)
+            'bela_cintra', 3)
         sensor_paulista_a = trafficsensor_device.TrafficSensorDevice(
-            'paulista_a', 3)
+            'paulista_a', 5)
         sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
-            'paulista_b', 2)
+            'paulista_b', 7)
 
         device_light_bela_cintra = trafficlight_device.TrafficLightDevice(
-            'bela_cintra', 16, 20, 21)
+            'bela_cintra', 8, 10, 12)
         device_light_paulista_a = trafficlight_device.TrafficLightDevice(
-            'paulista_a', 14, 15, 18)
+            'paulista_a', 22, 24, 26)
         device_light_paulista_b = trafficlight_device.TrafficLightDevice(
-            'paulista_b', 25, 8, 7)
+            'paulista_b', 36, 38, 40)
 
         light_bela_cintra.device_link(device_light_bela_cintra)
 
