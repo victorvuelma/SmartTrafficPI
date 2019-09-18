@@ -27,7 +27,7 @@ class CrossingRoad:
             cross_road.request_close()
 
         if self._light is not None:
-            if self._light.currentState is not trafficlight.TrafficState.OPEN:
+            if self._light.current_state is not trafficlight.TrafficState.OPEN:
                 self._light.state_next(
                     trafficlight.TrafficState.OPENING, 8)
 
