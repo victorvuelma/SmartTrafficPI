@@ -44,7 +44,7 @@ class DeviceManager(manager.Manager):
         if self.state is manager.State.INITIALIZED or self.state is manager.State.WAITING:
             self.setup_device(target_device)
 
-        if self.state is manager.State.WAITING:
+        if self.state is manager.State.INITIALIZED:
             self.init_device(target_device)
 
     def cleanup_gpio(self):
@@ -75,7 +75,7 @@ class DeviceManager(manager.Manager):
         gpio.setup(pin, gpio.OUT)
 
     def pin_setup_pulldown(self, pin):
-        gpio.pud_down(pin)
+        gpio.setup(pin, gpio.IN, pull_up_down = gpio.PUD_DOWN)
 
     def pin_output(self, pin, value=False):
         if value:
