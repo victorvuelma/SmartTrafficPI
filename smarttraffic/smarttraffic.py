@@ -4,6 +4,13 @@ from os import getenv
 from dotenv import load_dotenv
 from termcolor import cprint
 
+#Fake GPIO for development
+try:
+    import RPi.GPIO
+except (RuntimeError, ModuleNotFoundError):
+    import fake_rpigpio.utils
+    fake_rpigpio.utils.install()
+
 from smarttraffic.device import trafficlight_device, trafficsensor_device
 from smarttraffic.element import road, crossing, trafficlight
 from smarttraffic.manager.device_manager import _manager as device_manager
