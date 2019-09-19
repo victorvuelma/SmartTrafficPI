@@ -100,32 +100,36 @@ def init():
 
     if getenv('RASPBERRY') == 'TRUE':
         sensor_bela_cintra = trafficsensor_device.TrafficSensorDevice(
-            'bela_cintra', 3)
+            'bela_cintra', 11)
         sensor_paulista_a = trafficsensor_device.TrafficSensorDevice(
-            'paulista_a', 5)
+            'paulista_a', 13)
         sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
-            'paulista_b', 7)
+            'paulista_b', 15)
 
         device_light_bela_cintra = trafficlight_device.TrafficLightDevice(
-            'bela_cintra', 8, 10, 12)
+            'bela_cintra', 22, 24, 26)
         device_light_paulista_a = trafficlight_device.TrafficLightDevice(
-            'paulista_a', 22, 24, 26)
+            'paulista_a', 36, 38, 40)
         device_light_paulista_b = trafficlight_device.TrafficLightDevice(
-            'paulista_b', 36, 38, 40)
+            'paulista_b', 33, 35, 37)
 
         light_bela_cintra.device_link(device_light_bela_cintra)
-
         light_paulista_a.device_link(device_light_paulista_a)
-
         light_paulista_b.device_link(device_light_paulista_b)
 
         while True:
             if sensor_bela_cintra.find():
-                print('open bela cintra')
+                while sensor_bela_cintra.find():
+                    pass
+                
                 cross_road_bela_cintra.request_open()
             elif sensor_paulista_a.find():
-                print('open paulista a')
+                while sensor_paulista_a.find():
+                    pass
+
                 cross_road_av_paulista_a.request_open()
             elif sensor_paulista_b.find():
-                print('open paulista b')
+                while sensor_paulista_b.find():
+                    pass
+                
                 cross_road_av_paulista_b.request_open()

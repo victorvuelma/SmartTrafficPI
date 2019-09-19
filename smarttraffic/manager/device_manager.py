@@ -51,6 +51,7 @@ class DeviceManager(manager.Manager):
         gpio.cleanup()
 
     def setup_gpio(self):
+        self.cleanup_gpio()
         gpio.setmode(gpio.BOARD)
 
     def setup_devices(self):
