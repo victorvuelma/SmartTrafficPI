@@ -50,11 +50,11 @@ def init():
         'rua_bela_cintra', trafficlight.TrafficLightMode.DEFAULT)
 
     sensor_paulista_a = trafficsensor.TrafficSensor(
-        'av_paulista_a', 0.03)
+        'av_paulista_a', 3)
     sensor_paulista_b = trafficsensor.TrafficSensor(
-        'av_paulista_b', 0.03)
+        'av_paulista_b', 3)
     sensor_bela_cintra = trafficsensor.TrafficSensor(
-        'rua_bela_cintra', 0.03)
+        'rua_bela_cintra', 3)
 
     cross_paulista_bela_cintra = crossing.Crossing()
 
