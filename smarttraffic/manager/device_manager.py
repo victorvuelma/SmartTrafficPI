@@ -74,9 +74,10 @@ class DeviceManager(manager.Manager):
 
     def pin_setup_output(self, pin):
         gpio.setup(pin, gpio.OUT)
+        gpio.output(pin, gpio.LOW)
 
     def pin_setup_pulldown(self, pin):
-        gpio.setup(pin, gpio.IN, pull_up_down = gpio.PUD_DOWN)
+        gpio.setup(pin, gpio.IN, pull_up_down=gpio.PUD_DOWN)
 
     def pin_output(self, pin, value=False):
         if value:
@@ -86,5 +87,6 @@ class DeviceManager(manager.Manager):
 
     def pin_input(self, pin):
         return gpio.input(pin)
+
 
 _manager = DeviceManager()

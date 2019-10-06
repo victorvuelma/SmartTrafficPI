@@ -4,7 +4,7 @@ from os import getenv
 from dotenv import load_dotenv
 from termcolor import cprint
 
-#Fake GPIO for development
+# Fake GPIO for development
 try:
     import RPi.GPIO
 except (RuntimeError, ModuleNotFoundError):
@@ -66,8 +66,10 @@ def init():
     cross_paulista_bela_cintra.add_road(cross_road_bela_cintra)
     cross_paulista_bela_cintra.add_road(cross_road_av_paulista_a)
 
-    crossing.Crossing.add_cross(cross_road_bela_cintra, cross_road_av_paulista_a)
-    crossing.Crossing.add_cross(cross_road_bela_cintra, cross_road_av_paulista_b)
+    crossing.Crossing.add_cross(
+        cross_road_bela_cintra, cross_road_av_paulista_a)
+    crossing.Crossing.add_cross(
+        cross_road_bela_cintra, cross_road_av_paulista_b)
 
     light_bela_cintra.state_next(trafficlight.TrafficState.CLOSED, 0)
     light_paulista_a.state_next(trafficlight.TrafficState.OPEN, 0)
@@ -120,16 +122,16 @@ def init():
         while True:
             if sensor_bela_cintra.find():
                 while sensor_bela_cintra.find():
-                    pass
-                
+                    print('read bela cintra')
+
                 cross_road_bela_cintra.request_open()
             elif sensor_paulista_a.find():
                 while sensor_paulista_a.find():
-                    pass
+                    print('paulista a')
 
                 cross_road_av_paulista_a.request_open()
             elif sensor_paulista_b.find():
                 while sensor_paulista_b.find():
-                    pass
-                
+                    print('paulista b')
+
                 cross_road_av_paulista_b.request_open()
