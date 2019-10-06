@@ -12,7 +12,7 @@ except (RuntimeError, ModuleNotFoundError):
     fake_rpigpio.utils.install()
 
 from smarttraffic.device import trafficlight_device, trafficsensor_device
-from smarttraffic.element import road, crossing, trafficlight
+from smarttraffic.element import road, crossing, trafficlight, trafficsensor
 from smarttraffic.manager.device_manager import _manager as device_manager
 from smarttraffic.manager.network_manager import _manager as network_manager
 from smarttraffic.manager.system_manager import _manager as system_manager
@@ -48,6 +48,13 @@ def init():
         'av_paulista_b', trafficlight.TrafficLightMode.DEFAULT)
     light_bela_cintra = trafficlight.TrafficLight(
         'rua_bela_cintra', trafficlight.TrafficLightMode.DEFAULT)
+
+    sensor_paulista_a = trafficsensor.TrafficSensor(
+        'av_paulista_a', 0.03)
+    sensor_paulista_b = trafficsensor.TrafficSensor(
+        'av_paulista_b', 0.03)
+    sensor_bela_cintra = trafficsensor.TrafficSensor(
+        'rua_bela_cintra', 0.03)
 
     cross_paulista_bela_cintra = crossing.Crossing()
 
@@ -101,12 +108,6 @@ def init():
     task_manager.start_task('main')
 
     if getenv('RASPBERRY') == 'TRUE':
-        sensor_bela_cintra = trafficsensor_device.TrafficSensorDevice(
-            'bela_cintra', 11)
-        sensor_paulista_a = trafficsensor_device.TrafficSensorDevice(
-            'paulista_a', 13)
-        sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
-            'paulista_b', 15)
 
         device_light_bela_cintra = trafficlight_device.TrafficLightDevice(
             'bela_cintra', 22, 24, 26)
@@ -119,19 +120,32 @@ def init():
         light_paulista_a.device_link(device_light_paulista_a)
         light_paulista_b.device_link(device_light_paulista_b)
 
+        device_sensor_bela_cintra = trafficsensor_device.TrafficSensorDevice(
+            'bela_cintra', 11)
+        device_sensor_paulista_a = trafficsensor_device.TrafficSensorDevice(
+            'paulista_a', 13)
+        device_sensor_paulista_b = trafficsensor_device.TrafficSensorDevice(
+            'paulista_b', 15)
+
+        sensor_bela_cintra.device_link(device_sensor_bela_cintra)
+        sensor_paulista_a.device_link(device_sensor_paulista_a)
+        sensor_paulista_b.device_link(device_sensor_paulista_b)
+
         while True:
-            if sensor_bela_cintra.find():
-                while sensor_bela_cintra.find():
-                    print('read bela cintra')
+            if device_sensor_bela_cintra.find():
+                while device_sensor_bela_cintra.find():
+                    pass
 
                 cross_road_bela_cintra.request_open()
-            elif sensor_paulista_a.find():
-                while sensor_paulista_a.find():
-                    print('paulista a')
+
+            elif device_sensor_paulista_a.find():
+                while device_sensor_paulista_a.find():
+                    pass
 
                 cross_road_av_paulista_a.request_open()
-            elif sensor_paulista_b.find():
-                while sensor_paulista_b.find():
-                    print('paulista b')
+
+            elif device_sensor_paulista_b.find():
+                while device_sensor_paulista_b.find():
+                    pass
 
                 cross_road_av_paulista_b.request_open()
