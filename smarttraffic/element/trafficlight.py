@@ -17,9 +17,9 @@ class TrafficState(Enum):
     def state_light(self):
         if self is TrafficState.NONE:
             return trafficlight_device.Light.NONE
-        elif self is TrafficState.OPEN or self is TrafficState.OPENING:
+        elif self is TrafficState.OPEN:
             return trafficlight_device.Light.GREEN
-        elif self is TrafficState.CLOSED:
+        elif self is TrafficState.CLOSED or self is TrafficState.OPENING:
             return trafficlight_device.Light.RED
         else:
             return trafficlight_device.Light.YELLOW
